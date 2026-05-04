@@ -9,56 +9,55 @@ class TrainingPlanner:
         self.root.title("Training Planner")
         self.trainings = []
         self.load_data()
+        self.create_widgets()
+        self.update_table()
 
+    def create_widgets(self):
         # Поля ввода
-        self.date_label = tk.Label(root, text="Дата (ГГГГ-ММ-ДД):")
-        self.date_label.grid(row=0, column=0, padx=5, pady=5)
-        self.date_entry = tk.Entry(root)
+        tk.Label(self.root, text="Дата (ГГГГ-ММ-ДД):").grid(row=0, column=0, padx=5, pady=5)
+        self.date_entry = tk.Entry(self.root)
         self.date_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        self.type_label = tk.Label(root, text="Тип тренировки:")
-        self.type_label.grid(row=1, column=0, padx=5, pady=5)
-        self.type_entry = tk.Entry(root)
+        tk.Label(self.root, text="Тип тренировки:").grid(row=1, column=0, padx=5, pady=5)
+        self.type_entry = tk.Entry(self.root)
         self.type_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        self.duration_label = tk.Label(root, text="Длительность (мин):")
-        self.duration_label.grid(row=2, column=0, padx=5, pady=5)
-        self.duration_entry = tk.Entry(root)
+        tk.Label(self.root, text="Длительность (мин):").grid(row=2, column=0, padx=5, pady=5)
+        self.duration_entry = tk.Entry(self.root)
         self.duration_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        self.add_button = tk.Button(root, text="Добавить тренировку", command=self.add_training)
-        self.add_button.grid(row=3, column=0, columnspan=2, pady=10)
+        # Кнопка добавления
+        tk.Button(self.root, text="Добавить тренировку", command=self.add_training).grid(
+            row=3, column=0, columnspan=2, pady=10
+        )
 
         # Таблица
-        self.tree = ttk.Treeview(root, columns=("date", "type", "duration"), show='headings')
+        self.tree = ttk.Treeview(self.root, columns=("date", "type", "duration"), show="headings")
         self.tree.heading("date", text="Дата")
         self.tree.heading("type", text="Тип")
         self.tree.heading("duration", text="Длительность")
         self.tree.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
         # Фильтрация
-        self.filter_type_label = tk.Label(root, text="Фильтр по типу:")
-        self.filter_type_label.grid(row=5, column=0, padx=5, pady=5)
-        self.filter_type_entry = tk.Entry(root)
+        tk.Label(self.root, text="Фильтр по типу:").grid(row=5, column=0, padx=5, pady=5)
+        self.filter_type_entry = tk.Entry(self.root)
         self.filter_type_entry.grid(row=5, column=1, padx=5, pady=5)
 
-        self.filter_date_start_label = tk.Label(root, text="Дата с:")
-        self.filter_date_start_label.grid(row=6, column=0, padx=5, pady=5)
-        self.filter_date_start_entry = tk.Entry(root)
+        tk.Label(self.root, text="Дата с:").grid(row=6, column=0, padx=5, pady=5)
+        self.filter_date_start_entry = tk.Entry(self.root)
         self.filter_date_start_entry.grid(row=6, column=1, padx=5, pady=5)
 
-        self.filter_date_end_label = tk.Label(root, text="Дата по:")
-        self.filter_date_end_label.grid(row=7, column=0, padx=5, pady=5)
-        self.filter_date_end_entry = tk.Entry(root)
+        tk.Label(self.root, text="Дата по:").grid(row=7, column=0, padx=5, pady=5)
+        self.filter_date_end_entry = tk.Entry(self.root)
         self.filter_date_end_entry.grid(row=7, column=1, padx=5, pady=5)
 
-        self.apply_filter_button = tk.Button(root, text="Применить фильтр", command=self.apply_filter)
-        self.apply_filter_button.grid(row=8, column=0, columnspan=2, pady=10)
+        tk.Button(self.root, text="Применить фильтр", command=self.apply_filter).grid(
+            row=8, column=0, columnspan=2, pady=10
+        )
 
-        self.reset_filter_button = tk.Button(root, text="Сбросить фильтр", command=self.reset_filter)
-        self.reset_filter_button.grid(row=9, column=0, columnspan=2, pady=10)
-
-        self.update_table()
+        tk.Button(self.root, text="Сбросить фильтр", command=self.reset_filter).grid(
+            row=9, column=0, columnspan=2, pady=10
+        )
 
     def add_training(self):
         date = self.date_entry.get()
@@ -68,6 +67,7 @@ class TrainingPlanner:
         if not self.validate_date(date):
             messagebox.showerror("Ошибка", "Дата должна быть в формате ГГГГ-ММ-ДД")
             return
+
         if not duration.isdigit() or int(duration) <= 0:
             messagebox.showerror("Ошибка", "Длительность должна быть положительным числом")
             return
@@ -124,8 +124,6 @@ class TrainingPlanner:
         try:
             with open("trainings.json", "r", encoding="utf-8") as f:
                 self.trainings = json.load(f)
-                # Сортируем по дате (новые сверху)
-                self.trainings.sort(key=lambda x: x["date"], reverse=True)
                 return True
         except FileNotFoundError:
             return False
